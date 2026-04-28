@@ -59,22 +59,48 @@ def plot_experiment1_delay():
 
 
 def plot_experiment2_offered_load():
+    """Plot packet size effect on throughput/delay across congestion modes."""
     rows = read_rows("results_experiment2.csv")
-    x = [int(float(r["offered_load_pct"])) for r in rows]
-    loss = as_float(rows, "packet_loss_rate_pct")
-    delay = as_float(rows, "avg_delay_ms")
-    goodput = as_float(rows, "goodput_mbps")
-
-    fig, ax = plt.subplots(figsize=(9, 5.2))
-    ax.plot(x, loss, marker="o", linewidth=2.2, color="#d62728", label="Loss rate (%)")
-    ax.plot(x, delay, marker="^", linewidth=2.0, color="#9467bd", label="Delay (ms)")
-    ax.plot(x, goodput, marker="s", linewidth=2.0, color="#2ca02c", label="Goodput (Mbps)")
-    ax.set_xlabel("Total offered load (% of bottleneck)")
-    ax.set_ylabel("Metric value")
-    ax.set_title("Experiment 2: Saturation Knee under Increasing Offered Load")
-    style_axes(ax)
-    ax.legend(loc="upper left")
+    
+    # Separate data by congestion mode
+    uncongested = [r for r in rows if r.get("congestion_mode") == "without_congestion"]
+    congested = [r for r in rows if r.get("congestion_mode") == "with_congestion"]
+    
+    # Extract x values (packet size) and y values
+    x_uncong = [int(r["packet_size_bytes"]) for r in uncongested]
+    x_cong = [int(r["packet_size_bytes"]) for r in congested]
+    
+    goodput_uncong = [float(r["goodput_mbps"]) for r in uncongested]
+    goodput_cong = [float(r["goodput_mbps"]) for r in congested]
+    
+    loss_uncong = [float(r["packet_loss_rate_pct"]) for r in uncongested]
+    loss_cong = [float(r["packet_loss_rate_pct"]) for r in congested]
+    
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5.2))
+    
+    # Plot 1: Goodput
+    ax1.plot(x_uncong, goodput_uncong, marker="o", linewidth=2.2, color="#1f77b4", label="No congestion (20% load)")
+    ax1.plot(x_cong, goodput_cong, marker="s", linewidth=2.2, color="#d62728", label="With congestion (120% load)")
+    ax1.set_xlabel("Packet size (bytes)")
+    ax1.set_ylabel("Goodput (Mbps)")
+    ax1.set_title("Goodput vs Packet Size")
+    ax1.grid(True, alpha=0.3)
+    ax1.legend()
+    style_axes(ax1)
+    
+    # Plot 2: Loss rate
+    ax2.plot(x_uncong, loss_uncong, marker="o", linewidth=2.2, color="#1f77b4", label="No congestion (20% load)")
+    ax2.plot(x_cong, loss_cong, marker="s", linewidth=2.2, color="#d62728", label="With congestion (120% load)")
+    ax2.set_xlabel("Packet size (bytes)")
+    ax2.set_ylabel("Packet loss rate (%)")
+    ax2.set_title("Loss Rate vs Packet Size")
+    ax2.grid(True, alpha=0.3)
+    ax2.legend()
+    style_axes(ax2)
+    
+    fig.suptitle("Experiment 2: Packet Size Effect Under Different Congestion Levels")
     save(fig, "exp2_offered_load_knee.png")
+
 
 
 def plot_experiment3_bottleneck_sweep():
