@@ -1,0 +1,81 @@
+IEEE Sources Mapped to NS-3 Experiments
+Generated: 2026-04-26
+
+Use these references as discussion anchors in the presentation. Each experiment has at least one directly relevant IEEE source, with DOI links.
+
+Experiment 1: Delay Variation (Propagation Delay / Latency)
+1) Network latency and packet delay variation in cyber-physical systems
+   - Venue: 2011 IEEE Network Science Workshop
+   - DOI: https://doi.org/10.1109/NSW.2011.6004658
+   - Why it fits: Discusses latency components and packet delay variation, matching your delay sweep objective.
+
+2) Energy Efficiency and Delay in 5G Ultra-Reliable Low-Latency Communications System Architectures
+   - Venue: IEEE Network, 2018
+   - DOI: https://doi.org/10.1109/MNET.2018.1700260
+   - Why it fits: Frames delay as a primary systems metric and motivates delay-focused design tradeoffs.
+
+
+Experiment 2: Offered Load Variation (Saturation / Congestion Knee)
+1) Congestion control in TCP: performance of binary congestion notification enhanced TCP compared to Reno and Tahoe TCP
+   - Venue: 1996 International Conference on Network Protocols (ICNP)
+   - DOI: https://doi.org/10.1109/ICNP.1996.564953
+   - Why it fits: Congestion behavior under changing offered load is central to your saturation-knee experiment.
+
+2) TLA: A Traffic Load Adaptive Congestion Control Algorithm for TCP/AQM Networks
+   - Venue: 2006 International Conference on Intelligent Systems Design and Applications
+   - DOI: https://doi.org/10.1109/ISDA.2006.253896
+   - Why it fits: Explicitly load-adaptive congestion control; useful for explaining non-linear delay/loss rise.
+
+
+Experiment 3A: Bottleneck Bandwidth Sweep (Provisioning Crossover)
+1) Bandwidth Provisioning and Capacity Planning Tools
+   - Venue: 4th Annual Communication Networks and Services Research Conference, 2006
+   - DOI: https://doi.org/10.1109/CNSR.2006.19
+   - Why it fits: Capacity planning and bottleneck-aware provisioning directly match your bottleneck sweep.
+
+2) Modeling approaches and provisioning algorithms for dynamic bandwidth adjustment in multi-media networks
+   - Venue: 2006 High Capacity Optical Networks and Enabling Technologies
+   - DOI: https://doi.org/10.1109/HONET.2006.5338404
+   - Why it fits: Discusses bandwidth provisioning decisions under dynamic load.
+
+
+Experiment 3B: Packet Size Sweep (Goodput/Overhead)
+1) IP Packet Size to Maximize Throughput of Wireless ATM Link Layer
+   - Venue: 2005 Asia-Pacific Conference on Applied Electromagnetics
+   - DOI: https://doi.org/10.1109/APACE.2005.1607843
+   - Why it fits: Direct packet-size vs throughput discussion aligns with your packet-size sweep.
+
+2) Data link control layer performance for variable packet size and fixed packet size
+   - Venue: TENCON 2000
+   - DOI: https://doi.org/10.1109/TENCON.2000.892298
+   - Why it fits: Compares variable/fixed packet-size behavior and efficiency implications.
+
+
+Experiment 4: Wired vs Wireless Last-Hop Comparison
+1) Network performance comparison of VPN protocols on wired and wireless networks
+   - Venue: ICCCI 2015
+   - DOI: https://doi.org/10.1109/ICCCI.2015.7218077
+   - Why it fits: Comparative wired-vs-wireless performance framing matches your last-hop comparison.
+
+2) Wireless network performance test in hybrid wired/wireless network system
+   - Venue: WCICA 2011
+   - DOI: https://doi.org/10.1109/WCICA.2011.5970672
+   - Why it fits: Hybrid wired/wireless systems and performance differences are directly relevant.
+
+
+Experiment 5: MTU Boundary with Payload Sweep
+1) Fragmentation and AES Encryption Overhead in Very High-Speed Wireless LANs
+   - Venue: IEEE ICC 2009
+   - DOI: https://doi.org/10.1109/ICC.2009.5199040
+   - Why it fits: Fragmentation overhead discussion supports MTU boundary analysis.
+
+
+Experiment 6: Link MTU Sweep with Fixed Payload
+1) Fine tuning network MTU for HPC cluster: Correlating MTU with PCIe parameters and HCA architecture
+   - Venue: CoCoNet 2015
+   - DOI: https://doi.org/10.1109/CoCoNet.2015.7411286
+   - Why it fits: MTU tuning and performance impact are exactly your fixed-payload MTU sweep theme.
+
+
+Presentation Tip
+For each experiment slide, cite one primary source and optionally one backup source from this list. Keep the citation footer compact as: First Author et al., Venue, Year, DOI.

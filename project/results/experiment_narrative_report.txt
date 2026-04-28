@@ -1,0 +1,154 @@
+NS-3 Packet Size Impact Study: Narrative Report
+Date: 2026-04-25
+
+Overview
+This report accompanies the simulation output tables and explains the intent and method of each experiment in the multi-hop topology. The common topology was:
+
+Sender1 --+
+Sender2 --+-- Router1 -- bottleneck link -- Router2 -- last hop -- Receiver
+Sender3 --+
+
+The access side (senders to Router1) used high-capacity CSMA links to avoid making the edge a bottleneck. The middle link (Router1 to Router2) was treated as the primary constrained path in most tests. The last hop was wireless (802.11g) for Experiments 1-3, and directly compared against wired in Experiment 4. All runs used UDP traffic generation and FlowMonitor-based measurements.
+
+Queue discipline configuration
+- Router1 and Router2 queueing was configured explicitly with DropTail queues and a fixed packet buffer size.
+- This matters for saturation-knee interpretation: smaller buffers generally trigger earlier drops with lower queueing delay, while larger buffers defer drops but increase delay before loss begins.
+- On the wireless side, 802.11g uses DCF access, so contention and random backoff can contribute to delay/jitter trends.
+
+
+Experiment 1: Delay Variation
+What it is achieving:
+- Isolates propagation delay as the main variable while keeping offered load, packet size, and bottleneck bandwidth fixed.
+
+Methodology:
+- Fixed packet size: 512 bytes.
+- Fixed bottleneck bandwidth: 10 Mbps.
+- One active sender at 50 percent offered load.
+- Swept bottleneck delay over: 1, 5, 10, 25, 50, 75, 100 ms.
+- Recorded throughput, goodput, average delay, and loss.
+
+Why this matters:
+- It demonstrates how end-to-end latency responds to longer path propagation even when the traffic profile is unchanged.
+- This helps separate pure distance/propagation effects from congestion effects in later experiments.
+
+
+Experiment 2: Offered Load Variation
+What it is achieving:
+- Explicitly serves as the with-congestion scenario for Topic 5, showing the saturation knee where queueing and loss rise non-linearly.
+- Includes a matched without-congestion comparison run at 20 percent offered load for direct baseline contrast.
+
+Methodology:
+- Fixed packet size: 512 bytes.
+- Fixed bottleneck bandwidth: 10 Mbps.
+- Three active senders.
+- Swept total offered load: 20, 40, 60, 80, 100, 120 percent of bottleneck capacity.
+- Per-sender rate was adjusted so the aggregate matched each load point.
+- Added one-sender 20 percent run labeled without_congestion.
+- Measured throughput, goodput, delay, and loss.
+
+Why this matters:
+- It identifies the practical operating region of the network before congestion collapse behavior dominates.
+- This provides direct evidence for capacity planning and safe utilization targets.
+
+
+Experiment 3: Bottleneck Provisioning and Packet Size Effects (Wireless Last Hop)
+What it is achieving:
+- Part A identifies the provisioning crossover point where aggregate offered traffic can pass without severe loss.
+- Part B isolates packet-size sensitivity at fixed bottleneck capacity.
+
+Methodology:
+- Three senders, each offering 4 Mbps (12 Mbps total).
+- Part A: fixed packet size 512 bytes, bottleneck sweep at 2, 5, 10, 15, 20 Mbps.
+- Part B: fixed bottleneck 10 Mbps, packet-size sweep at 128, 256, 512, 1024, 1500 bytes.
+- Wireless last hop kept constant to match the multi-hop design.
+- Measured throughput, goodput, delay, loss, and overhead ratio.
+
+Why this matters:
+- Part A answers an engineering question: how much bottleneck capacity is needed for a known offered load.
+- Part B shows that packet size is not only an efficiency parameter; it can materially change delivery behavior, overhead share, and delay characteristics.
+
+
+Experiment 4: Wired vs Wireless Last-Hop Comparison
+What it is achieving:
+- Directly quantifies the contribution of the wireless last hop by running matched scenarios with only one change: wired versus wireless last-hop medium.
+
+Methodology:
+- Same traffic model as Experiment 3 Part B:
+  - Three senders at 4 Mbps each.
+  - Bottleneck fixed at 10 Mbps.
+  - Packet-size sweep at 128, 256, 512, 1024, 1500 bytes.
+- Ran each packet size twice:
+  - Wireless last hop (802.11g).
+  - Wired last hop (10 Mbps, 2 ms point-to-point).
+- Stored results with a link_type field to support side-by-side plotting.
+
+Why this matters:
+- It isolates medium-specific behavior on the final hop and supports causal comparison, not just correlation.
+- It helps explain whether observed degradation is mainly from shared wireless access dynamics or from the rest of the path.
+
+
+Experiment 5: MTU Boundary with Payload Sweep
+What it is achieving:
+- Examines how payload size relative to a fixed link MTU changes efficiency and delivery behavior.
+
+Methodology:
+- Single sender over a point-to-point link with MTU fixed at 576 bytes.
+- Swept payload size over: 64, 256, 512, 548, 600, 1024, 1500 bytes.
+- Computed frame size as payload + UDP/IPv4 headers to mark whether each case exceeds MTU.
+- Measured throughput, goodput, delay, loss, overhead ratio, and FlowMonitor drop events.
+
+Why this matters:
+- It directly visualizes how application payload choices interact with MTU constraints.
+- It supports report discussion of packetization efficiency and potential fragmentation/drop risk near MTU boundaries.
+
+
+Experiment 6: Link MTU Sweep with Fixed Payload
+What it is achieving:
+- Holds payload constant and varies link MTU to isolate MTU provisioning effects.
+
+Methodology:
+- Fixed payload at 1000 bytes (frame size 1028 bytes including UDP/IPv4 headers).
+- Swept link MTU over: 512, 800, 1024, 1028, 1200, 1500 bytes.
+- Tagged each run by whether MTU is sufficient for the frame.
+- Measured throughput, goodput, delay, loss, overhead ratio, and FlowMonitor drop events.
+
+Why this matters:
+- It answers an operations question: how sensitive performance is to the configured link MTU for a known traffic profile.
+- It complements Experiment 5 by flipping the independent variable (MTU instead of payload).
+
+
+Experiment 7: TCP Competing Flow with Packet Size Sweep
+What it is achieving:
+- Introduces transport-layer competition by adding one TCP BulkSend flow against three UDP senders at the same bottleneck.
+- Evaluates whether packet-size changes affect UDP and TCP differently under shared DropTail buffering.
+
+Methodology:
+- Added Sender4 as a TCP BulkSend source while keeping Sender1-3 as UDP sources.
+- Kept simulation duration and deterministic seed consistent with the existing study setup.
+- Swept packet size at 128, 256, 512, 1024, 1500 bytes.
+- Logged UDP and TCP metrics separately: goodput, overhead ratio, FlowMonitor drop-based fragmentation/oversize proxy, and packet loss rate.
+
+Why this matters:
+- It adds cross-transport realism to Topic 5 by capturing how an elastic TCP flow interacts with constant-rate UDP traffic.
+- It supports discussion of packet-based DropTail fairness effects for heterogeneous packet sizes.
+
+
+Measurement and Reproducibility Notes
+- Simulation duration: 30 seconds per run.
+- Metric collection: FlowMonitor.
+- Core reported metrics:
+  - Throughput: delivered bits per second based on received bytes.
+  - Goodput: useful payload rate.
+  - End-to-end delay: average packet delay.
+  - Packet loss rate: percent of transmitted packets not received.
+  - Overhead ratio: fixed UDP+IPv4 header share over delivered traffic.
+- Deterministic random seed and run numbering were used for repeatable sweeps.
+
+
+How to use this with the results tables
+- Pair this narrative with the numeric tables to frame your report sections as:
+  1) controlled variable,
+  2) observed trend,
+  3) network-layer explanation,
+  4) practical takeaway.
+- This structure makes your analysis clear and defensible for a networking course project.

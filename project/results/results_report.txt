@@ -1,0 +1,87 @@
+NS-3 Packet Size Impact Simulation Results
+Generated: 2026-04-27 20:36:09 PDT
+
+Baseline
+========
+scenario,bandwidth_mbps,packet_size_bytes,throughput_mbps,goodput_mbps,avg_delay_ms,packet_loss_rate_pct,overhead_ratio_pct
+baseline,10,512,8.437440,7.999943,2.433600,0.000000,5.185185
+
+Experiment 1: Delay Variation
+=============================
+delay_ms,packet_size_bytes,bottleneck_mbps,active_senders,offered_load_pct,throughput_mbps,goodput_mbps,avg_delay_ms,packet_loss_rate_pct,overhead_ratio_pct
+1,512,10,1,50,3.221677,3.054627,1318.233929,38.906780,5.185185
+5,512,10,1,50,3.216612,3.049825,1334.886984,39.002825,5.185185
+10,512,10,1,50,3.216314,3.049543,1339.155856,39.008475,5.185185
+25,512,10,1,50,3.214527,3.047848,1354.636294,39.042373,5.185185
+50,512,10,1,50,3.214825,3.048130,1377.412634,39.036723,5.185185
+75,512,10,1,50,3.217655,3.050814,1393.173457,38.983051,5.185185
+100,512,10,1,50,3.220634,3.053639,1421.516814,38.926554,5.185185
+
+Experiment 2: Offered Load Variation (With and Without Congestion)
+==================================================================
+congestion_mode,offered_load_pct,total_offered_mbps,packet_size_bytes,bottleneck_mbps,active_senders,throughput_mbps,goodput_mbps,avg_delay_ms,packet_loss_rate_pct,overhead_ratio_pct
+without_congestion,20,2.000,512,10,1,2.108607,1.999272,6.749533,0.035311,5.185185
+with_congestion,20,2.000,512,10,3,2.107713,1.998424,6.733917,0.000000,5.185185
+with_congestion,40,4.000,512,10,3,3.685109,3.494029,382.630394,12.586572,5.185185
+with_congestion,60,6.000,512,10,3,3.725777,3.532588,723.979272,41.081272,5.185185
+with_congestion,80,8.000,512,10,3,3.750803,3.556317,1410.229149,55.514920,5.185185
+with_congestion,100,10.000,512,10,3,3.749164,3.554763,2381.067343,64.426855,5.185185
+with_congestion,120,12.000,512,10,3,3.752590,3.558012,3418.680728,70.328971,5.185185
+
+Experiment 3: Bottleneck + Packet Size (Wireless)
+=================================================
+scenario,link_type,bottleneck_mbps,packet_size_bytes,active_senders,offered_load_mbps,throughput_mbps,goodput_mbps,avg_delay_ms,packet_loss_rate_pct,overhead_ratio_pct
+bottleneck_sweep,wireless,2,512,3,12.000,2.060491,1.953651,3761.367473,83.708084,5.185185
+bottleneck_sweep,wireless,5,512,3,12.000,3.749611,3.555187,3419.002587,70.352528,5.185185
+bottleneck_sweep,wireless,10,512,3,12.000,3.752739,3.558153,3414.798615,70.327794,5.185185
+bottleneck_sweep,wireless,15,512,3,12.000,3.751697,3.557164,3418.151359,70.336038,5.185185
+bottleneck_sweep,wireless,20,512,3,12.000,3.752739,3.558153,3415.543544,70.327794,5.185185
+packet_size_sweep,wireless,10,128,3,12.000,0.823250,0.675487,6639.538767,94.367035,17.948718
+packet_size_sweep,wireless,10,256,3,12.000,1.742311,1.570534,6749.358417,86.903058,9.859155
+packet_size_sweep,wireless,10,512,3,12.000,3.753037,3.558435,3415.806525,70.325438,5.185185
+packet_size_sweep,wireless,10,1024,3,12.000,6.953067,6.768004,773.684136,43.559482,2.661597
+packet_size_sweep,wireless,10,1500,3,12.000,0.468727,0.460138,1265.922447,96.162606,1.832461
+
+Experiment 4: Wired vs Wireless Packet Size Sweep
+=================================================
+link_type,packet_size_bytes,bottleneck_mbps,active_senders,offered_load_mbps,throughput_mbps,goodput_mbps,avg_delay_ms,packet_loss_rate_pct,overhead_ratio_pct
+wireless,128,10,3,12.000,0.822303,0.674710,6638.892477,94.373513,17.948718
+wired,128,10,3,12.000,0.824196,0.676264,6649.475731,94.360557,17.948718
+wireless,256,10,3,12.000,1.746776,1.574559,6754.327494,86.869490,9.859155
+wired,256,10,3,12.000,1.744269,1.572299,6755.809050,86.888335,9.859155
+wireless,512,10,3,12.000,3.750058,3.555610,3418.457166,70.348995,5.185185
+wired,512,10,3,12.000,3.750654,3.556175,3422.825955,70.344283,5.185185
+wireless,1024,10,3,12.000,7.006755,6.820264,758.394747,43.123675,2.661597
+wired,1024,10,3,12.000,7.012269,6.825631,750.366571,43.078916,2.661597
+wireless,1500,10,3,12.000,0.481373,0.472552,1281.465969,96.059079,1.832461
+wired,1500,10,3,12.000,0.503292,0.494069,1305.893185,95.879633,1.832461
+
+Experiment 5: MTU Boundary with Payload Sweep
+=============================================
+payload_bytes,frame_bytes,link_mtu_bytes,exceeds_mtu,throughput_mbps,goodput_mbps,avg_delay_ms,packet_loss_rate_pct,overhead_ratio_pct,flowmonitor_drop_events,oversized_packet_drops
+64,92,576,0,10.604288,7.376896,554.105835,7.788144,30.434783,10952,0
+256,284,576,0,8.874937,7.999943,2.228800,0.000000,9.859155,0,0
+512,540,576,0,8.437440,7.999943,2.433600,0.000000,5.185185,0,0
+548,576,576,0,8.408576,7.999826,2.462400,0.000000,4.861111,0,0
+600,628,576,1,8.372775,7.999467,2.521600,0.000000,4.458599,0,0
+1024,1052,576,1,8.218692,7.999943,2.860800,0.000000,2.661597,0,0
+1500,1528,576,1,8.147975,7.998667,3.259200,0.000000,1.832461,0,0
+
+Experiment 6: Link MTU Sweep with Fixed Payload
+===============================================
+link_mtu_bytes,frame_bytes,payload_bytes,mtu_sufficient,throughput_mbps,goodput_mbps,avg_delay_ms,packet_loss_rate_pct,overhead_ratio_pct,flowmonitor_drop_events,oversized_packet_drops
+512,1028,1000,0,8.223086,7.999111,2.859200,0.000000,2.723735,0,0
+800,1028,1000,0,8.223086,7.999111,2.841600,0.000000,2.723735,0,0
+1024,1028,1000,0,8.223086,7.999111,2.841600,0.000000,2.723735,0,0
+1028,1028,1000,1,8.223086,7.999111,2.824000,0.000000,2.723735,0,0
+1200,1028,1000,1,8.223086,7.999111,2.824000,0.000000,2.723735,0,0
+1500,1028,1000,1,8.223086,7.999111,2.824000,0.000000,2.723735,0,0
+
+Experiment 7: TCP Competing Flow with Packet Size Sweep
+=======================================================
+experiment,packet_size_bytes,udp_goodput_mbps,udp_overhead_ratio_pct,udp_fragmentation_effect_flowmonitor_drops,udp_packet_loss_rate_pct,tcp_goodput_mbps,tcp_overhead_ratio_pct,tcp_fragmentation_effect_flowmonitor_drops,tcp_packet_loss_rate_pct
+experiment7_tcp_competing_flow,128,0.414932,17.948718,295863,96.539834,0.204094,23.809524,97,1.650502
+experiment7_tcp_competing_flow,256,0.928591,9.859155,126119,92.256321,0.400914,13.513514,62,2.070036
+experiment7_tcp_competing_flow,512,2.453928,5.185185,67117,79.536166,0.794483,7.246377,75,1.315789
+experiment7_tcp_competing_flow,1024,4.765484,2.661597,25574,60.259128,1.546593,3.759398,92,1.652596
+experiment7_tcp_competing_flow,1500,0.265655,1.832461,39943,97.784526,2.278345,2.597403,75,1.343845
