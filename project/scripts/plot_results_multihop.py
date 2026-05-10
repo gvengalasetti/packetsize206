@@ -58,6 +58,32 @@ def plot_experiment1_delay():
     save(fig, "exp1_delay_vs_e2e_delay_throughput.png")
 
 
+def plot_experiment1_all_metrics():
+    rows = read_rows("results_experiment1.csv")
+    x = [int(float(r["delay_ms"])) for r in rows]
+    metric_specs = [
+        ("throughput_mbps", "Throughput (Mbps)", "#1f77b4"),
+        ("goodput_mbps", "Goodput (Mbps)", "#2ca02c"),
+        ("avg_delay_ms", "Delay (ms)", "#9467bd"),
+        ("packet_loss_rate_pct", "Loss (%)", "#d62728"),
+        ("overhead_ratio_pct", "Overhead (%)", "#ff7f0e"),
+    ]
+
+    fig, axes = plt.subplots(3, 2, figsize=(12, 9))
+    flat_axes = axes.flatten()
+
+    for idx, (key, ylabel, color) in enumerate(metric_specs):
+        ax = flat_axes[idx]
+        ax.plot(x, as_float(rows, key), marker="o", linewidth=2.1, color=color)
+        ax.set_xlabel("Bottleneck delay (ms)")
+        ax.set_ylabel(ylabel)
+        style_axes(ax)
+
+    flat_axes[-1].axis("off")
+    fig.suptitle("Experiment 1: All Available Metrics")
+    save(fig, "exp1_all_metrics.png")
+
+
 def plot_experiment2_offered_load():
     """Plot packet size effect on throughput/delay across congestion modes."""
     rows = read_rows("results_experiment2.csv")
@@ -100,6 +126,50 @@ def plot_experiment2_offered_load():
     
     fig.suptitle("Experiment 2: Packet Size Effect Under Different Congestion Levels")
     save(fig, "exp2_offered_load_knee.png")
+
+
+def plot_experiment2_all_metrics():
+    rows = read_rows("results_experiment2.csv")
+    uncongested = [r for r in rows if r.get("congestion_mode") == "without_congestion"]
+    congested = [r for r in rows if r.get("congestion_mode") == "with_congestion"]
+
+    metric_specs = [
+        ("throughput_mbps", "Throughput (Mbps)"),
+        ("goodput_mbps", "Goodput (Mbps)"),
+        ("avg_delay_ms", "Delay (ms)"),
+        ("packet_loss_rate_pct", "Loss (%)"),
+        ("overhead_ratio_pct", "Overhead (%)"),
+    ]
+
+    fig, axes = plt.subplots(3, 2, figsize=(12, 9))
+    flat_axes = axes.flatten()
+
+    for idx, (key, ylabel) in enumerate(metric_specs):
+        ax = flat_axes[idx]
+        ax.plot(
+            [int(r["packet_size_bytes"]) for r in uncongested],
+            [float(r[key]) for r in uncongested],
+            marker="o",
+            linewidth=2.1,
+            color="#1f77b4",
+            label="No congestion (20%)",
+        )
+        ax.plot(
+            [int(r["packet_size_bytes"]) for r in congested],
+            [float(r[key]) for r in congested],
+            marker="s",
+            linewidth=2.1,
+            color="#d62728",
+            label="With congestion (120%)",
+        )
+        ax.set_xlabel("Packet size (bytes)")
+        ax.set_ylabel(ylabel)
+        style_axes(ax)
+
+    flat_axes[0].legend(loc="best")
+    flat_axes[-1].axis("off")
+    fig.suptitle("Experiment 2: All Available Metrics")
+    save(fig, "exp2_all_metrics.png")
 
 
 
@@ -147,6 +217,49 @@ def plot_experiment3_packet_sweep():
     save(fig, "exp3b_packet_size_goodput_overhead.png")
 
 
+def plot_experiment3_all_metrics():
+    rows = read_rows("results_experiment3.csv")
+    metric_specs = [
+        ("throughput_mbps", "Throughput (Mbps)", "#1f77b4"),
+        ("goodput_mbps", "Goodput (Mbps)", "#2ca02c"),
+        ("avg_delay_ms", "Delay (ms)", "#9467bd"),
+        ("packet_loss_rate_pct", "Loss (%)", "#d62728"),
+        ("overhead_ratio_pct", "Overhead (%)", "#ff7f0e"),
+    ]
+
+    for scenario, xlabel, out_name, title in [
+        (
+            "bottleneck_sweep",
+            "Bottleneck bandwidth (Mbps)",
+            "exp3a_all_metrics.png",
+            "Experiment 3A: All Available Metrics",
+        ),
+        (
+            "packet_size_sweep",
+            "Packet size (bytes)",
+            "exp3b_all_metrics.png",
+            "Experiment 3B: All Available Metrics",
+        ),
+    ]:
+        sweep = [r for r in rows if r["scenario"] == scenario]
+        x_key = "bottleneck_mbps" if scenario == "bottleneck_sweep" else "packet_size_bytes"
+        x = [float(r[x_key]) for r in sweep]
+
+        fig, axes = plt.subplots(3, 2, figsize=(12, 9))
+        flat_axes = axes.flatten()
+
+        for idx, (key, ylabel, color) in enumerate(metric_specs):
+            ax = flat_axes[idx]
+            ax.plot(x, as_float(sweep, key), marker="o", linewidth=2.1, color=color)
+            ax.set_xlabel(xlabel)
+            ax.set_ylabel(ylabel)
+            style_axes(ax)
+
+        flat_axes[-1].axis("off")
+        fig.suptitle(title)
+        save(fig, out_name)
+
+
 def plot_experiment4_wired_vs_wireless():
     rows = read_rows("results_experiment4.csv")
     grouped = defaultdict(dict)
@@ -173,24 +286,80 @@ def plot_experiment4_wired_vs_wireless():
     save(fig, "exp4_wired_vs_wireless_comparison.png")
 
 
+def plot_experiment4_all_metrics():
+    rows = read_rows("results_experiment4.csv")
+    grouped = defaultdict(dict)
+    for r in rows:
+        psize = int(float(r["packet_size_bytes"]))
+        grouped[psize][r["link_type"]] = r
+
+    packet_sizes = sorted(grouped.keys())
+    metric_specs = [
+        ("throughput_mbps", "Throughput (Mbps)"),
+        ("goodput_mbps", "Goodput (Mbps)"),
+        ("avg_delay_ms", "Delay (ms)"),
+        ("packet_loss_rate_pct", "Loss (%)"),
+        ("overhead_ratio_pct", "Overhead (%)"),
+    ]
+
+    fig, axes = plt.subplots(3, 2, figsize=(12, 9))
+    flat_axes = axes.flatten()
+
+    for idx, (key, ylabel) in enumerate(metric_specs):
+        ax = flat_axes[idx]
+        ax.plot(
+            packet_sizes,
+            [float(grouped[p]["wireless"][key]) for p in packet_sizes],
+            marker="o",
+            linewidth=2.1,
+            color="#1f77b4",
+            label="Wireless",
+        )
+        ax.plot(
+            packet_sizes,
+            [float(grouped[p]["wired"][key]) for p in packet_sizes],
+            marker="s",
+            linewidth=2.1,
+            color="#d62728",
+            label="Wired",
+        )
+        ax.set_xlabel("Packet size (bytes)")
+        ax.set_ylabel(ylabel)
+        style_axes(ax)
+
+    flat_axes[0].legend(loc="best")
+    flat_axes[-1].axis("off")
+    fig.suptitle("Experiment 4: All Available Metrics")
+    save(fig, "exp4_all_metrics.png")
+
+
 def plot_baseline_bar():
     rows = read_rows("baseline.csv")
     baseline = rows[0]
-    metrics = [
+    metric_names = ["Throughput", "Goodput", "Delay", "Loss", "Overhead"]
+    metric_values = [
         float(baseline["throughput_mbps"]),
         float(baseline["goodput_mbps"]),
         float(baseline["avg_delay_ms"]),
         float(baseline["packet_loss_rate_pct"]),
+        float(baseline["overhead_ratio_pct"]),
     ]
-    labels = ["Throughput", "Goodput", "Delay", "Loss"]
+    metric_units = ["Mbps", "Mbps", "ms", "%", "%"]
 
-    fig, ax = plt.subplots(figsize=(8.5, 4.8))
-    bars = ax.bar(labels, metrics, color=["#1f77b4", "#2ca02c", "#9467bd", "#d62728"])
-    for b in bars:
-        ax.text(b.get_x() + b.get_width() / 2.0, b.get_height(), f"{b.get_height():.2f}",
-                ha="center", va="bottom", fontsize=9)
+    fig, ax = plt.subplots(figsize=(9.5, 5.0))
+    bars = ax.bar(metric_names, metric_values, color=["#1f77b4", "#2ca02c", "#9467bd", "#d62728", "#ff7f0e"])
+    for b, unit in zip(bars, metric_units):
+        ax.text(
+            b.get_x() + b.get_width() / 2.0,
+            b.get_height(),
+            f"{b.get_height():.2f} {unit}",
+            ha="center",
+            va="bottom",
+            fontsize=9,
+        )
     ax.set_title("Baseline Metrics Snapshot")
-    ax.set_ylabel("Value (mixed units)")
+    ax.set_xlabel("Metric")
+    ax.set_ylabel("Value (native units per metric)")
     style_axes(ax)
     save(fig, "baseline_metrics_snapshot.png")
 
@@ -213,6 +382,34 @@ def plot_experiment5_mtu_payload_sweep():
     style_axes(ax)
     ax.legend(loc="best")
     save(fig, "exp5_mtu_payload_sweep.png")
+
+
+def plot_experiment5_all_metrics():
+    rows = read_rows("experiment4_mtu.csv")
+    x = [int(float(r["payload_bytes"])) for r in rows]
+    metric_specs = [
+        ("throughput_mbps", "Throughput (Mbps)", "#1f77b4"),
+        ("goodput_mbps", "Goodput (Mbps)", "#2ca02c"),
+        ("avg_delay_ms", "Delay (ms)", "#9467bd"),
+        ("packet_loss_rate_pct", "Loss (%)", "#d62728"),
+        ("overhead_ratio_pct", "Overhead (%)", "#ff7f0e"),
+        ("flowmonitor_drop_events", "FlowMonitor drops", "#8c564b"),
+        ("oversized_packet_drops", "Oversized packet drops", "#17becf"),
+    ]
+
+    fig, axes = plt.subplots(4, 2, figsize=(12, 11))
+    flat_axes = axes.flatten()
+
+    for idx, (key, ylabel, color) in enumerate(metric_specs):
+        ax = flat_axes[idx]
+        ax.plot(x, as_float(rows, key), marker="o", linewidth=2.1, color=color)
+        ax.set_xlabel("Payload size (bytes)")
+        ax.set_ylabel(ylabel)
+        style_axes(ax)
+
+    flat_axes[-1].axis("off")
+    fig.suptitle("Experiment 5: All Available Metrics")
+    save(fig, "exp5_all_metrics.png")
 
 
 def plot_experiment6_link_mtu_sweep():
@@ -240,6 +437,38 @@ def plot_experiment6_link_mtu_sweep():
     save(fig, "exp6_link_mtu_sweep.png")
 
 
+def plot_experiment6_all_metrics():
+    rows = read_rows("experiment4_mtu_link_mtu.csv")
+    x = [int(float(r["link_mtu_bytes"])) for r in rows]
+    metric_specs = [
+        ("throughput_mbps", "Throughput (Mbps)", "#1f77b4"),
+        ("goodput_mbps", "Goodput (Mbps)", "#2ca02c"),
+        ("avg_delay_ms", "Delay (ms)", "#9467bd"),
+        ("packet_loss_rate_pct", "Loss (%)", "#d62728"),
+        ("overhead_ratio_pct", "Overhead (%)", "#ff7f0e"),
+        ("flowmonitor_drop_events", "FlowMonitor drops", "#8c564b"),
+        ("oversized_packet_drops", "Oversized packet drops", "#17becf"),
+    ]
+
+    fig, axes = plt.subplots(4, 2, figsize=(12, 11))
+    flat_axes = axes.flatten()
+
+    for idx, (key, ylabel, color) in enumerate(metric_specs):
+        ax = flat_axes[idx]
+        ax.plot(x, as_float(rows, key), marker="o", linewidth=2.1, color=color)
+        ax.set_xlabel("Link MTU (bytes)")
+        ax.set_ylabel(ylabel)
+        style_axes(ax)
+
+    frame_size = int(float(rows[0]["frame_bytes"]))
+    for idx in range(len(metric_specs)):
+        flat_axes[idx].axvline(frame_size, linestyle="--", color="gray", alpha=0.7, linewidth=1.1)
+
+    flat_axes[-1].axis("off")
+    fig.suptitle("Experiment 6: All Available Metrics")
+    save(fig, "exp6_all_metrics.png")
+
+
 def plot_experiment7_tcp_vs_udp():
     rows = read_rows("results_experiment7.csv")
     x = [int(float(r["packet_size_bytes"])) for r in rows]
@@ -261,6 +490,81 @@ def plot_experiment7_tcp_vs_udp():
     save(fig, "exp7_tcp_vs_udp_competition.png")
 
 
+def plot_experiment7_all_metrics():
+    rows = read_rows("results_experiment7.csv")
+    x = [int(float(r["packet_size_bytes"])) for r in rows]
+
+    fig, axes = plt.subplots(2, 2, figsize=(12, 8.5))
+    flat_axes = axes.flatten()
+
+    metric_pairs = [
+        ("udp_goodput_mbps", "tcp_goodput_mbps", "Goodput (Mbps)"),
+        ("udp_packet_loss_rate_pct", "tcp_packet_loss_rate_pct", "Loss (%)"),
+        ("udp_overhead_ratio_pct", "tcp_overhead_ratio_pct", "Overhead (%)"),
+        (
+            "udp_fragmentation_effect_flowmonitor_drops",
+            "tcp_fragmentation_effect_flowmonitor_drops",
+            "FlowMonitor drops",
+        ),
+    ]
+
+    for idx, (udp_key, tcp_key, ylabel) in enumerate(metric_pairs):
+        ax = flat_axes[idx]
+        ax.plot(x, as_float(rows, udp_key), marker="o", linewidth=2.1, color="#1f77b4", label="UDP")
+        ax.plot(x, as_float(rows, tcp_key), marker="s", linewidth=2.1, color="#d62728", label="TCP")
+        ax.set_xlabel("Packet size (bytes)")
+        ax.set_ylabel(ylabel)
+        style_axes(ax)
+
+    flat_axes[0].legend(loc="best")
+    fig.suptitle("Experiment 7: All Available Metrics")
+    save(fig, "exp7_all_metrics.png")
+
+
+def plot_experiment8_all_metrics():
+    rows = read_rows("results_experiment8.csv")
+    low_bw = [r for r in rows if r["regime"] == "low_bw"]
+    high_bw = [r for r in rows if r["regime"] == "high_bw"]
+
+    metric_specs = [
+        ("throughput_mbps", "Throughput (Mbps)"),
+        ("goodput_mbps", "Goodput (Mbps)"),
+        ("avg_delay_ms", "Delay (ms)"),
+        ("packet_loss_rate_pct", "Loss (%)"),
+        ("overhead_ratio_pct", "Overhead (%)"),
+        ("serial_delay_ms", "Serialization delay (ms)"),
+    ]
+
+    fig, axes = plt.subplots(3, 2, figsize=(12, 9))
+    flat_axes = axes.flatten()
+
+    for idx, (key, ylabel) in enumerate(metric_specs):
+        ax = flat_axes[idx]
+        ax.plot(
+            [int(float(r["packet_size_bytes"])) for r in low_bw],
+            [float(r[key]) for r in low_bw],
+            marker="o",
+            linewidth=2.1,
+            color="#1f77b4",
+            label="Low BW (1 Mbps)",
+        )
+        ax.plot(
+            [int(float(r["packet_size_bytes"])) for r in high_bw],
+            [float(r[key]) for r in high_bw],
+            marker="s",
+            linewidth=2.1,
+            color="#d62728",
+            label="High BW (100 Mbps)",
+        )
+        ax.set_xlabel("Packet size (bytes)")
+        ax.set_ylabel(ylabel)
+        style_axes(ax)
+
+    flat_axes[0].legend(loc="best")
+    fig.suptitle("Experiment 8: All Available Metrics")
+    save(fig, "exp8_all_metrics.png")
+
+
 def main():
     os.makedirs(RESULTS_DIR, exist_ok=True)
     os.makedirs(IMAGES_DIR, exist_ok=True)
@@ -268,13 +572,21 @@ def main():
 
     plot_baseline_bar()
     plot_experiment1_delay()
+    plot_experiment1_all_metrics()
     plot_experiment2_offered_load()
+    plot_experiment2_all_metrics()
     plot_experiment3_bottleneck_sweep()
     plot_experiment3_packet_sweep()
+    plot_experiment3_all_metrics()
     plot_experiment4_wired_vs_wireless()
+    plot_experiment4_all_metrics()
     plot_experiment5_mtu_payload_sweep()
+    plot_experiment5_all_metrics()
     plot_experiment6_link_mtu_sweep()
+    plot_experiment6_all_metrics()
     plot_experiment7_tcp_vs_udp()
+    plot_experiment7_all_metrics()
+    plot_experiment8_all_metrics()
 
     print(f"Saved multi-hop figures to {IMAGES_DIR}")
 

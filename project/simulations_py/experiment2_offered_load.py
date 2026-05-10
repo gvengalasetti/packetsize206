@@ -13,12 +13,6 @@ Fixed parameters:
 
 Varied parameter:
 - total offered load in percent of bottleneck: 20..120%
-
-Topic 5 framing:
-- This is the explicit "with congestion" scenario where three concurrent senders
-    increase aggregate offered load against a fixed bottleneck.
-- The script also runs a matching "without congestion" comparison at 20% load
-    using a single sender so the project can discuss congestion onset directly.
 """
 
 import csv
@@ -34,7 +28,6 @@ NUM_SENDERS = 3
 TOTAL_LOAD_PCT_VALUES = [20, 40, 60, 80, 100, 120]
 OUTPUT_CSV = "project/results/results_experiment2.csv"
 SINK_PORT = 9102
-ROUTER_QUEUE_MAX_SIZE = "100p"
 
 
 def _node_container_from_node(node):
@@ -45,7 +38,6 @@ def _node_container_from_node(node):
 
 def _configure_wifi(ap_node, sta_node):
     # Build an infrastructure-mode 802.11g last hop (Router2 as AP).
-    # 802.11g here uses DCF channel access, which can add contention delay.
     channel = ns.YansWifiChannelHelper.Default()
     phy = ns.YansWifiPhyHelper()
     phy.SetChannel(channel.Create())
@@ -124,11 +116,11 @@ def _collect_metrics(flow_helper, monitor, sink_port, packet_size, active_time):
     }
 
 
-def run_one(total_load_pct, run_id, active_senders):
+def run_one(total_load_pct, run_id):
     ns.RngSeedManager.SetRun(run_id)
 
     senders = ns.NodeContainer()
-    senders.Create(active_senders)
+    senders.Create(NUM_SENDERS)
     routers = ns.NodeContainer()
     routers.Create(2)
     receiver = ns.NodeContainer()
@@ -142,17 +134,11 @@ def run_one(total_load_pct, run_id, active_senders):
     csma = ns.CsmaHelper()
     csma.SetChannelAttribute("DataRate", ns.StringValue("100Mbps"))
     csma.SetChannelAttribute("Delay", ns.TimeValue(ns.MilliSeconds(1)))
-    csma.SetQueue("ns3::DropTailQueue<Packet>", "MaxSize", ns.StringValue(ROUTER_QUEUE_MAX_SIZE))
-    # Router1 access-side DropTail queue: smaller buffers drop earlier but limit queueing delay;
-    # larger buffers delay loss onset but can create higher delay near the saturation knee.
     csma_devices = csma.Install(csma_nodes)
 
     bottleneck = ns.PointToPointHelper()
     bottleneck.SetDeviceAttribute("DataRate", ns.StringValue(f"{BOTTLENECK_MBPS}Mbps"))
     bottleneck.SetChannelAttribute("Delay", ns.TimeValue(ns.MilliSeconds(5)))
-    bottleneck.SetQueue("ns3::DropTailQueue<Packet>", "MaxSize", ns.StringValue(ROUTER_QUEUE_MAX_SIZE))
-    # Router1/Router2 bottleneck-side DropTail queue: queue depth directly shifts when drops start
-    # relative to offered load; shallow buffers drop sooner with lower delay, deep buffers do opposite.
     bottleneck_devices = bottleneck.Install(routers.Get(0), routers.Get(1))
 
     wifi_devices = _configure_wifi(routers.Get(1), receiver.Get(0))
@@ -187,9 +173,9 @@ def run_one(total_load_pct, run_id, active_senders):
     sink_apps.Stop(ns.Seconds(SIM_SECONDS + 0.5))
 
     total_offered_mbps = BOTTLENECK_MBPS * total_load_pct / 100.0
-    per_sender_mbps = total_offered_mbps / active_senders
+    per_sender_mbps = total_offered_mbps / NUM_SENDERS
 
-    for sender_idx in range(active_senders):
+    for sender_idx in range(NUM_SENDERS):
         remote = ns.InetSocketAddress(receiver_ip, SINK_PORT)
         onoff = ns.OnOffHelper("ns3::UdpSocketFactory", remote.ConvertTo())
         onoff.SetAttribute("OnTime", ns.StringValue("ns3::ConstantRandomVariable[Constant=1]"))
@@ -218,28 +204,10 @@ def main():
     ns.RngSeedManager.SetSeed(206)
 
     rows = []
-    run_id = 1
-
-    # Topic 5 direct comparison point: same 20% offered load with only one sender.
-    total_offered_mbps, metrics = run_one(20, run_id, 1)
-    rows.append(
-        {
-            "congestion_mode": "without_congestion",
-            "offered_load_pct": 20,
-            "total_offered_mbps": total_offered_mbps,
-            "packet_size_bytes": PACKET_SIZE_BYTES,
-            "bottleneck_mbps": BOTTLENECK_MBPS,
-            "active_senders": 1,
-            **metrics,
-        }
-    )
-    run_id += 1
-
-    for load_pct in TOTAL_LOAD_PCT_VALUES:
-        total_offered_mbps, metrics = run_one(load_pct, run_id, NUM_SENDERS)
+    for run_id, load_pct in enumerate(TOTAL_LOAD_PCT_VALUES, start=1):
+        total_offered_mbps, metrics = run_one(load_pct, run_id)
         rows.append(
             {
-                "congestion_mode": "with_congestion",
                 "offered_load_pct": load_pct,
                 "total_offered_mbps": total_offered_mbps,
                 "packet_size_bytes": PACKET_SIZE_BYTES,
@@ -248,12 +216,10 @@ def main():
                 **metrics,
             }
         )
-        run_id += 1
 
     with open(OUTPUT_CSV, "w", newline="", encoding="utf-8") as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow([
-            "congestion_mode",
             "offered_load_pct",
             "total_offered_mbps",
             "packet_size_bytes",
@@ -267,7 +233,6 @@ def main():
         ])
         for row in rows:
             writer.writerow([
-                row["congestion_mode"],
                 row["offered_load_pct"],
                 f"{row['total_offered_mbps']:.3f}",
                 row["packet_size_bytes"],
@@ -281,10 +246,9 @@ def main():
             ])
 
     print("\nExperiment 2 Summary (Offered Load Variation)")
-    print("mode | load_pct | throughput_mbps | goodput_mbps | avg_delay_ms | loss_pct")
+    print("load_pct | throughput_mbps | goodput_mbps | avg_delay_ms | loss_pct")
     for row in rows:
         print(
-            f"{row['congestion_mode']:>17} | "
             f"{row['offered_load_pct']:>8} | "
             f"{row['throughput_mbps']:>15.3f} | "
             f"{row['goodput_mbps']:>12.3f} | "

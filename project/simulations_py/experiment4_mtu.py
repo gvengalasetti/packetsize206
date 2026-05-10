@@ -39,17 +39,7 @@ def compute_metrics(stats, packet_size, active_time):
     loss_pct     = ((stats.txPackets - stats.rxPackets) * 100.0 / stats.txPackets) if stats.txPackets > 0 else 0.0
     total_bytes  = stats.rxPackets * (packet_size + IP_UDP_HEADER_BYTES)
     overhead_pct = (stats.rxPackets * IP_UDP_HEADER_BYTES * 100.0 / total_bytes) if total_bytes > 0 else 0.0
-    flowmonitor_drop_events = sum(int(d) for d in stats.packetsDropped)
-    return (
-        throughput,
-        goodput,
-        delay_ms,
-        loss_pct,
-        overhead_pct,
-        flowmonitor_drop_events,
-        int(stats.txPackets),
-        int(stats.rxPackets),
-    )
+    return throughput, goodput, delay_ms, loss_pct, overhead_pct
 
 
 def run_one(payload_size, run_id, sim_seconds=10.0, port=9020):
@@ -108,7 +98,7 @@ def run_one(payload_size, run_id, sim_seconds=10.0, port=9020):
     ns.Simulator.Destroy()
 
     if chosen is None:
-        return (0.0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0)
+        return (0.0, 0.0, 0.0, 0.0, 0.0)
     return compute_metrics(chosen, payload_size, sim_seconds - 1.0)
 
 
@@ -128,22 +118,15 @@ def main():
             "avg_delay_ms",
             "packet_loss_rate_pct",
             "overhead_ratio_pct",
-            "flowmonitor_drop_events",
-            "oversized_packet_drops",
         ])
 
         for run_id, p in enumerate(PAYLOAD_SIZES, start=1):
             frame = p + IP_UDP_HEADER_BYTES
             exceeds = frame > LINK_MTU
             m = run_one(p, run_id)
-            # FlowMonitor provides end-to-end drop events; this captures dropped oversized packets
-            # when they manifest as tx-rx gaps for cases above the MTU threshold.
-            oversized_packet_drops = 0
-            if exceeds:
-                oversized_packet_drops = max(0, int(m[6]) - int(m[7]))
             w.writerow([p, frame, LINK_MTU, int(exceeds),
                         f"{m[0]:.6f}", f"{m[1]:.6f}", f"{m[2]:.6f}",
-                        f"{m[3]:.6f}", f"{m[4]:.6f}", int(m[5]), oversized_packet_drops])
+                        f"{m[3]:.6f}", f"{m[4]:.6f}"])
             status = "EXCEEDS MTU" if exceeds else "within MTU"
             print(f"  payload={p:>4d}B  frame={frame:>4d}B  [{status:^11s}]  "
                   f"throughput={m[0]:.3f} Mbps  loss={m[3]:.2f}%")

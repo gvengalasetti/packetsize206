@@ -32,7 +32,6 @@ FIXED_PACKET_SIZE_BYTES = 512
 FIXED_BOTTLENECK_MBPS = 10
 OUTPUT_CSV = "project/results/results_experiment3.csv"
 SINK_PORT = 9103
-ROUTER_QUEUE_MAX_SIZE = "100p"
 
 
 def _node_container_from_node(node):
@@ -43,7 +42,6 @@ def _node_container_from_node(node):
 
 def _configure_wifi(ap_node, sta_node):
     # Configure 802.11g AP/STA segment as the final wireless hop.
-    # 802.11g operates in DCF mode here, so random backoff contributes to delay/jitter.
     channel = ns.YansWifiChannelHelper.Default()
     phy = ns.YansWifiPhyHelper()
     phy.SetChannel(channel.Create())
@@ -140,17 +138,11 @@ def run_one(packet_size_bytes, bottleneck_mbps, run_id):
     csma = ns.CsmaHelper()
     csma.SetChannelAttribute("DataRate", ns.StringValue("100Mbps"))
     csma.SetChannelAttribute("Delay", ns.TimeValue(ns.MilliSeconds(1)))
-    csma.SetQueue("ns3::DropTailQueue<Packet>", "MaxSize", ns.StringValue(ROUTER_QUEUE_MAX_SIZE))
-    # Router1 access-side queue is explicit DropTail. Smaller buffers drop earlier but cap delay;
-    # larger buffers absorb bursts longer but can inflate delay before loss starts.
     csma_devices = csma.Install(csma_nodes)
 
     bottleneck = ns.PointToPointHelper()
     bottleneck.SetDeviceAttribute("DataRate", ns.StringValue(f"{bottleneck_mbps}Mbps"))
     bottleneck.SetChannelAttribute("Delay", ns.TimeValue(ns.MilliSeconds(5)))
-    bottleneck.SetQueue("ns3::DropTailQueue<Packet>", "MaxSize", ns.StringValue(ROUTER_QUEUE_MAX_SIZE))
-    # Router1/Router2 bottleneck queues are DropTail with a defined packet buffer size.
-    # This buffer size directly shifts the loss-onset point around the saturation knee.
     bottleneck_devices = bottleneck.Install(routers.Get(0), routers.Get(1))
 
     wifi_devices = _configure_wifi(routers.Get(1), receiver.Get(0))
