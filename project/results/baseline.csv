@@ -1,2 +1,0 @@
-scenario,bandwidth_mbps,packet_size_bytes,throughput_mbps,goodput_mbps,avg_delay_ms,packet_loss_rate_pct,overhead_ratio_pct
-baseline,10,512,8.437440,7.999943,2.433600,0.000000,5.185185

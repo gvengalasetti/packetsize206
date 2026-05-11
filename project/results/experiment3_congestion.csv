@@ -1,5 +1,0 @@
-mode,packet_size_bytes,num_senders,throughput_mbps,goodput_mbps,avg_delay_ms,jitter_ms,packet_loss_rate_pct,queue_drops,overhead_ratio_pct
-no_congestion,256,1,4.437468,3.999972,12.503360,0.000000,0.000000,0,9.859155
-congested,256,3,5.506823,4.963897,1592.518590,1.165215,58.401983,23453,9.859155
-no_congestion,1024,1,4.108878,3.999516,13.855040,0.000000,0.000000,0,2.661597
-congested,1024,3,5.532117,5.384875,1710.997561,2.095545,54.870700,4040,2.661597
