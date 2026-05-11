@@ -1,0 +1,6 @@
+experiment,packet_size_bytes,udp_goodput_mbps,udp_overhead_ratio_pct,udp_fragmentation_effect_flowmonitor_drops,udp_packet_loss_rate_pct,tcp_goodput_mbps,tcp_overhead_ratio_pct,tcp_fragmentation_effect_flowmonitor_drops,tcp_packet_loss_rate_pct
+experiment7_tcp_competing_flow,128,0.414932,17.948718,295863,96.539834,0.204094,23.809524,97,1.650502
+experiment7_tcp_competing_flow,256,0.928591,9.859155,126119,92.256321,0.400914,13.513514,62,2.070036
+experiment7_tcp_competing_flow,512,2.453928,5.185185,67117,79.536166,0.794483,7.246377,75,1.315789
+experiment7_tcp_competing_flow,1024,4.765484,2.661597,25574,60.259128,1.546593,3.759398,92,1.652596
+experiment7_tcp_competing_flow,1500,0.265655,1.832461,39943,97.784526,2.278345,2.597403,75,1.343845

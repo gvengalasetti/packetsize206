@@ -1,0 +1,100 @@
+================================================================================
+NS-3 PACKET SIZE & MTU SWEEP EXPERIMENTS - CONSOLIDATED RESULTS REPORT
+================================================================================
+
+BASELINE
+--------------------------------------------------------------------------------
+scenario=baseline, bandwidth_mbps=10, packet_size_bytes=512, throughput_mbps=8.437440, goodput_mbps=7.999943, avg_delay_ms=2.433600, packet_loss_rate_pct=0.000000, overhead_ratio_pct=5.185185
+
+EXPERIMENT 1
+--------------------------------------------------------------------------------
+delay_ms=1, packet_size_bytes=512, bottleneck_mbps=10, active_senders=1, offered_load_pct=50, throughput_mbps=3.221677, goodput_mbps=3.054627, avg_delay_ms=1318.233929, packet_loss_rate_pct=38.906780, overhead_ratio_pct=5.185185
+delay_ms=5, packet_size_bytes=512, bottleneck_mbps=10, active_senders=1, offered_load_pct=50, throughput_mbps=3.216612, goodput_mbps=3.049825, avg_delay_ms=1334.886984, packet_loss_rate_pct=39.002825, overhead_ratio_pct=5.185185
+delay_ms=10, packet_size_bytes=512, bottleneck_mbps=10, active_senders=1, offered_load_pct=50, throughput_mbps=3.216314, goodput_mbps=3.049543, avg_delay_ms=1339.155856, packet_loss_rate_pct=39.008475, overhead_ratio_pct=5.185185
+delay_ms=25, packet_size_bytes=512, bottleneck_mbps=10, active_senders=1, offered_load_pct=50, throughput_mbps=3.214527, goodput_mbps=3.047848, avg_delay_ms=1354.636294, packet_loss_rate_pct=39.042373, overhead_ratio_pct=5.185185
+delay_ms=50, packet_size_bytes=512, bottleneck_mbps=10, active_senders=1, offered_load_pct=50, throughput_mbps=3.214825, goodput_mbps=3.048130, avg_delay_ms=1377.412634, packet_loss_rate_pct=39.036723, overhead_ratio_pct=5.185185
+delay_ms=75, packet_size_bytes=512, bottleneck_mbps=10, active_senders=1, offered_load_pct=50, throughput_mbps=3.217655, goodput_mbps=3.050814, avg_delay_ms=1393.173457, packet_loss_rate_pct=38.983051, overhead_ratio_pct=5.185185
+delay_ms=100, packet_size_bytes=512, bottleneck_mbps=10, active_senders=1, offered_load_pct=50, throughput_mbps=3.220634, goodput_mbps=3.053639, avg_delay_ms=1421.516814, packet_loss_rate_pct=38.926554, overhead_ratio_pct=5.185185
+
+EXPERIMENT 2
+--------------------------------------------------------------------------------
+congestion_mode=without_congestion, offered_load_pct=20, total_offered_mbps=2.000, packet_size_bytes=128, bottleneck_mbps=10, active_senders=1, throughput_mbps=0.951234, goodput_mbps=0.780500, avg_delay_ms=4912.525099, packet_loss_rate_pct=60.974576, overhead_ratio_pct=17.948718
+congestion_mode=without_congestion, offered_load_pct=20, total_offered_mbps=2.000, packet_size_bytes=256, bottleneck_mbps=10, active_senders=1, throughput_mbps=1.691543, goodput_mbps=1.524771, avg_delay_ms=409.480031, packet_loss_rate_pct=23.760593, overhead_ratio_pct=9.859155
+congestion_mode=without_congestion, offered_load_pct=20, total_offered_mbps=2.000, packet_size_bytes=512, bottleneck_mbps=10, active_senders=1, throughput_mbps=2.108756, goodput_mbps=1.999413, avg_delay_ms=6.733901, packet_loss_rate_pct=0.028249, overhead_ratio_pct=5.185185
+congestion_mode=without_congestion, offered_load_pct=20, total_offered_mbps=2.000, packet_size_bytes=1024, bottleneck_mbps=10, active_senders=1, throughput_mbps=2.054375, goodput_mbps=1.999695, avg_delay_ms=7.352246, packet_loss_rate_pct=0.014124, overhead_ratio_pct=2.661597
+congestion_mode=without_congestion, offered_load_pct=20, total_offered_mbps=2.000, packet_size_bytes=1500, bottleneck_mbps=10, active_senders=1, throughput_mbps=2.036771, goodput_mbps=1.999448, avg_delay_ms=8.104198, packet_loss_rate_pct=0.020691, overhead_ratio_pct=1.832461
+congestion_mode=with_congestion, offered_load_pct=120, total_offered_mbps=12.000, packet_size_bytes=128, bottleneck_mbps=10, active_senders=3, throughput_mbps=0.822260, goodput_mbps=0.674675, avg_delay_ms=6640.925655, packet_loss_rate_pct=94.373807, overhead_ratio_pct=17.948718
+congestion_mode=with_congestion, offered_load_pct=120, total_offered_mbps=12.000, packet_size_bytes=256, bottleneck_mbps=10, active_senders=3, throughput_mbps=1.738158, goodput_mbps=1.566791, avg_delay_ms=6752.985884, packet_loss_rate_pct=86.934271, overhead_ratio_pct=9.859155
+congestion_mode=with_congestion, offered_load_pct=120, total_offered_mbps=12.000, packet_size_bytes=512, bottleneck_mbps=10, active_senders=3, throughput_mbps=3.753186, goodput_mbps=3.558577, avg_delay_ms=3418.601266, packet_loss_rate_pct=70.324260, overhead_ratio_pct=5.185185
+congestion_mode=with_congestion, offered_load_pct=120, total_offered_mbps=12.000, packet_size_bytes=1024, bottleneck_mbps=10, active_senders=3, throughput_mbps=7.011399, goodput_mbps=6.824783, avg_delay_ms=755.837180, packet_loss_rate_pct=43.085984, overhead_ratio_pct=2.661597
+congestion_mode=with_congestion, offered_load_pct=120, total_offered_mbps=12.000, packet_size_bytes=1500, bottleneck_mbps=10, active_senders=3, throughput_mbps=0.459454, goodput_mbps=0.451034, avg_delay_ms=1255.086877, packet_loss_rate_pct=96.238526, overhead_ratio_pct=1.832461
+congestion_mode=x, offered_load_pct=None, total_offered_mbps=None, packet_size_bytes=None, bottleneck_mbps=None, active_senders=None, throughput_mbps=None, goodput_mbps=None, avg_delay_ms=None, packet_loss_rate_pct=None, overhead_ratio_pct=None
+
+EXPERIMENT 3
+--------------------------------------------------------------------------------
+scenario=bottleneck_sweep, link_type=wireless, bottleneck_mbps=2, packet_size_bytes=512, active_senders=3, offered_load_mbps=12.000, throughput_mbps=2.060491, goodput_mbps=1.953651, avg_delay_ms=3761.367473, packet_loss_rate_pct=83.708084, overhead_ratio_pct=5.185185
+scenario=bottleneck_sweep, link_type=wireless, bottleneck_mbps=5, packet_size_bytes=512, active_senders=3, offered_load_mbps=12.000, throughput_mbps=3.749611, goodput_mbps=3.555187, avg_delay_ms=3419.002587, packet_loss_rate_pct=70.352528, overhead_ratio_pct=5.185185
+scenario=bottleneck_sweep, link_type=wireless, bottleneck_mbps=10, packet_size_bytes=512, active_senders=3, offered_load_mbps=12.000, throughput_mbps=3.752739, goodput_mbps=3.558153, avg_delay_ms=3414.798615, packet_loss_rate_pct=70.327794, overhead_ratio_pct=5.185185
+scenario=bottleneck_sweep, link_type=wireless, bottleneck_mbps=15, packet_size_bytes=512, active_senders=3, offered_load_mbps=12.000, throughput_mbps=3.751697, goodput_mbps=3.557164, avg_delay_ms=3418.151359, packet_loss_rate_pct=70.336038, overhead_ratio_pct=5.185185
+scenario=bottleneck_sweep, link_type=wireless, bottleneck_mbps=20, packet_size_bytes=512, active_senders=3, offered_load_mbps=12.000, throughput_mbps=3.752739, goodput_mbps=3.558153, avg_delay_ms=3415.543544, packet_loss_rate_pct=70.327794, overhead_ratio_pct=5.185185
+scenario=packet_size_sweep, link_type=wireless, bottleneck_mbps=10, packet_size_bytes=128, active_senders=3, offered_load_mbps=12.000, throughput_mbps=0.823250, goodput_mbps=0.675487, avg_delay_ms=6639.538767, packet_loss_rate_pct=94.367035, overhead_ratio_pct=17.948718
+scenario=packet_size_sweep, link_type=wireless, bottleneck_mbps=10, packet_size_bytes=256, active_senders=3, offered_load_mbps=12.000, throughput_mbps=1.742311, goodput_mbps=1.570534, avg_delay_ms=6749.358417, packet_loss_rate_pct=86.903058, overhead_ratio_pct=9.859155
+scenario=packet_size_sweep, link_type=wireless, bottleneck_mbps=10, packet_size_bytes=512, active_senders=3, offered_load_mbps=12.000, throughput_mbps=3.753037, goodput_mbps=3.558435, avg_delay_ms=3415.806525, packet_loss_rate_pct=70.325438, overhead_ratio_pct=5.185185
+scenario=packet_size_sweep, link_type=wireless, bottleneck_mbps=10, packet_size_bytes=1024, active_senders=3, offered_load_mbps=12.000, throughput_mbps=6.953067, goodput_mbps=6.768004, avg_delay_ms=773.684136, packet_loss_rate_pct=43.559482, overhead_ratio_pct=2.661597
+scenario=packet_size_sweep, link_type=wireless, bottleneck_mbps=10, packet_size_bytes=1500, active_senders=3, offered_load_mbps=12.000, throughput_mbps=0.468727, goodput_mbps=0.460138, avg_delay_ms=1265.922447, packet_loss_rate_pct=96.162606, overhead_ratio_pct=1.832461
+
+EXPERIMENT 4
+--------------------------------------------------------------------------------
+link_type=wireless, packet_size_bytes=128, bottleneck_mbps=10, active_senders=3, offered_load_mbps=12.000, throughput_mbps=0.822303, goodput_mbps=0.674710, avg_delay_ms=6638.892477, packet_loss_rate_pct=94.373513, overhead_ratio_pct=17.948718
+link_type=wired, packet_size_bytes=128, bottleneck_mbps=10, active_senders=3, offered_load_mbps=12.000, throughput_mbps=0.824196, goodput_mbps=0.676264, avg_delay_ms=6649.475731, packet_loss_rate_pct=94.360557, overhead_ratio_pct=17.948718
+link_type=wireless, packet_size_bytes=256, bottleneck_mbps=10, active_senders=3, offered_load_mbps=12.000, throughput_mbps=1.746776, goodput_mbps=1.574559, avg_delay_ms=6754.327494, packet_loss_rate_pct=86.869490, overhead_ratio_pct=9.859155
+link_type=wired, packet_size_bytes=256, bottleneck_mbps=10, active_senders=3, offered_load_mbps=12.000, throughput_mbps=1.744269, goodput_mbps=1.572299, avg_delay_ms=6755.809050, packet_loss_rate_pct=86.888335, overhead_ratio_pct=9.859155
+link_type=wireless, packet_size_bytes=512, bottleneck_mbps=10, active_senders=3, offered_load_mbps=12.000, throughput_mbps=3.750058, goodput_mbps=3.555610, avg_delay_ms=3418.457166, packet_loss_rate_pct=70.348995, overhead_ratio_pct=5.185185
+link_type=wired, packet_size_bytes=512, bottleneck_mbps=10, active_senders=3, offered_load_mbps=12.000, throughput_mbps=3.750654, goodput_mbps=3.556175, avg_delay_ms=3422.825955, packet_loss_rate_pct=70.344283, overhead_ratio_pct=5.185185
+link_type=wireless, packet_size_bytes=1024, bottleneck_mbps=10, active_senders=3, offered_load_mbps=12.000, throughput_mbps=7.006755, goodput_mbps=6.820264, avg_delay_ms=758.394747, packet_loss_rate_pct=43.123675, overhead_ratio_pct=2.661597
+link_type=wired, packet_size_bytes=1024, bottleneck_mbps=10, active_senders=3, offered_load_mbps=12.000, throughput_mbps=7.012269, goodput_mbps=6.825631, avg_delay_ms=750.366571, packet_loss_rate_pct=43.078916, overhead_ratio_pct=2.661597
+link_type=wireless, packet_size_bytes=1500, bottleneck_mbps=10, active_senders=3, offered_load_mbps=12.000, throughput_mbps=0.481373, goodput_mbps=0.472552, avg_delay_ms=1281.465969, packet_loss_rate_pct=96.059079, overhead_ratio_pct=1.832461
+link_type=wired, packet_size_bytes=1500, bottleneck_mbps=10, active_senders=3, offered_load_mbps=12.000, throughput_mbps=0.503292, goodput_mbps=0.494069, avg_delay_ms=1305.893185, packet_loss_rate_pct=95.879633, overhead_ratio_pct=1.832461
+
+EXPERIMENT 5
+--------------------------------------------------------------------------------
+payload_bytes=64, frame_bytes=92, link_mtu_bytes=576, exceeds_mtu=0, throughput_mbps=10.604288, goodput_mbps=7.376896, avg_delay_ms=554.105835, packet_loss_rate_pct=7.788144, overhead_ratio_pct=30.434783, flowmonitor_drop_events=10952, oversized_packet_drops=0
+payload_bytes=256, frame_bytes=284, link_mtu_bytes=576, exceeds_mtu=0, throughput_mbps=8.874937, goodput_mbps=7.999943, avg_delay_ms=2.228800, packet_loss_rate_pct=0.000000, overhead_ratio_pct=9.859155, flowmonitor_drop_events=0, oversized_packet_drops=0
+payload_bytes=512, frame_bytes=540, link_mtu_bytes=576, exceeds_mtu=0, throughput_mbps=8.437440, goodput_mbps=7.999943, avg_delay_ms=2.433600, packet_loss_rate_pct=0.000000, overhead_ratio_pct=5.185185, flowmonitor_drop_events=0, oversized_packet_drops=0
+payload_bytes=548, frame_bytes=576, link_mtu_bytes=576, exceeds_mtu=0, throughput_mbps=8.408576, goodput_mbps=7.999826, avg_delay_ms=2.462400, packet_loss_rate_pct=0.000000, overhead_ratio_pct=4.861111, flowmonitor_drop_events=0, oversized_packet_drops=0
+payload_bytes=600, frame_bytes=628, link_mtu_bytes=576, exceeds_mtu=1, throughput_mbps=8.372775, goodput_mbps=7.999467, avg_delay_ms=2.521600, packet_loss_rate_pct=0.000000, overhead_ratio_pct=4.458599, flowmonitor_drop_events=0, oversized_packet_drops=0
+payload_bytes=1024, frame_bytes=1052, link_mtu_bytes=576, exceeds_mtu=1, throughput_mbps=8.218692, goodput_mbps=7.999943, avg_delay_ms=2.860800, packet_loss_rate_pct=0.000000, overhead_ratio_pct=2.661597, flowmonitor_drop_events=0, oversized_packet_drops=0
+payload_bytes=1500, frame_bytes=1528, link_mtu_bytes=576, exceeds_mtu=1, throughput_mbps=8.147975, goodput_mbps=7.998667, avg_delay_ms=3.259200, packet_loss_rate_pct=0.000000, overhead_ratio_pct=1.832461, flowmonitor_drop_events=0, oversized_packet_drops=0
+
+EXPERIMENT 6
+--------------------------------------------------------------------------------
+link_mtu_bytes=512, frame_bytes=1028, payload_bytes=1000, mtu_sufficient=0, throughput_mbps=6.783382, goodput_mbps=6.598621, avg_delay_ms=408.274638, packet_loss_rate_pct=17.454621, overhead_ratio_pct=2.723735, flowmonitor_drop_events=1859, oversized_packet_drops=5058
+link_mtu_bytes=800, frame_bytes=1028, payload_bytes=1000, mtu_sufficient=0, throughput_mbps=6.791039, goodput_mbps=6.606069, avg_delay_ms=418.715705, packet_loss_rate_pct=17.361447, overhead_ratio_pct=2.723735, flowmonitor_drop_events=1660, oversized_packet_drops=5031
+link_mtu_bytes=1024, frame_bytes=1028, payload_bytes=1000, mtu_sufficient=0, throughput_mbps=6.785934, goodput_mbps=6.601103, avg_delay_ms=412.070598, packet_loss_rate_pct=17.423563, overhead_ratio_pct=2.723735, flowmonitor_drop_events=1697, oversized_packet_drops=5049
+link_mtu_bytes=1028, frame_bytes=1028, payload_bytes=1000, mtu_sufficient=1, throughput_mbps=6.780830, goodput_mbps=6.596138, avg_delay_ms=411.680237, packet_loss_rate_pct=17.485679, overhead_ratio_pct=2.723735, flowmonitor_drop_events=1742, oversized_packet_drops=0
+link_mtu_bytes=1200, frame_bytes=1028, payload_bytes=1000, mtu_sufficient=1, throughput_mbps=6.789905, goodput_mbps=6.604966, avg_delay_ms=408.637951, packet_loss_rate_pct=17.375250, overhead_ratio_pct=2.723735, flowmonitor_drop_events=1662, oversized_packet_drops=0
+link_mtu_bytes=1500, frame_bytes=1028, payload_bytes=1000, mtu_sufficient=1, throughput_mbps=6.784233, goodput_mbps=6.599448, avg_delay_ms=410.606694, packet_loss_rate_pct=17.444268, overhead_ratio_pct=2.723735, flowmonitor_drop_events=1645, oversized_packet_drops=0
+
+EXPERIMENT 7
+--------------------------------------------------------------------------------
+experiment=experiment7_tcp_competing_flow, packet_size_bytes=128, udp_goodput_mbps=0.414932, udp_overhead_ratio_pct=17.948718, udp_fragmentation_effect_flowmonitor_drops=295863, udp_packet_loss_rate_pct=96.539834, tcp_goodput_mbps=0.204094, tcp_overhead_ratio_pct=23.809524, tcp_fragmentation_effect_flowmonitor_drops=97, tcp_packet_loss_rate_pct=1.650502
+experiment=experiment7_tcp_competing_flow, packet_size_bytes=256, udp_goodput_mbps=0.928591, udp_overhead_ratio_pct=9.859155, udp_fragmentation_effect_flowmonitor_drops=126119, udp_packet_loss_rate_pct=92.256321, tcp_goodput_mbps=0.400914, tcp_overhead_ratio_pct=13.513514, tcp_fragmentation_effect_flowmonitor_drops=62, tcp_packet_loss_rate_pct=2.070036
+experiment=experiment7_tcp_competing_flow, packet_size_bytes=512, udp_goodput_mbps=2.453928, udp_overhead_ratio_pct=5.185185, udp_fragmentation_effect_flowmonitor_drops=67117, udp_packet_loss_rate_pct=79.536166, tcp_goodput_mbps=0.794483, tcp_overhead_ratio_pct=7.246377, tcp_fragmentation_effect_flowmonitor_drops=75, tcp_packet_loss_rate_pct=1.315789
+experiment=experiment7_tcp_competing_flow, packet_size_bytes=1024, udp_goodput_mbps=4.765484, udp_overhead_ratio_pct=2.661597, udp_fragmentation_effect_flowmonitor_drops=25574, udp_packet_loss_rate_pct=60.259128, tcp_goodput_mbps=1.546593, tcp_overhead_ratio_pct=3.759398, tcp_fragmentation_effect_flowmonitor_drops=92, tcp_packet_loss_rate_pct=1.652596
+experiment=experiment7_tcp_competing_flow, packet_size_bytes=1500, udp_goodput_mbps=0.265655, udp_overhead_ratio_pct=1.832461, udp_fragmentation_effect_flowmonitor_drops=39943, udp_packet_loss_rate_pct=97.784526, tcp_goodput_mbps=2.278345, tcp_overhead_ratio_pct=2.597403, tcp_fragmentation_effect_flowmonitor_drops=75, tcp_packet_loss_rate_pct=1.343845
+
+EXPERIMENT 8
+--------------------------------------------------------------------------------
+regime=low_bw, bottleneck_mbps=1, offered_load_pct=300.000000, packet_size_bytes=64, frame_bytes=92, serial_delay_ms=0.736000, throughput_mbps=0.578217, goodput_mbps=0.402238, avg_delay_ms=6763.764414, packet_loss_rate_pct=86.582687, overhead_ratio_pct=30.434783
+regime=low_bw, bottleneck_mbps=1, offered_load_pct=300.000000, packet_size_bytes=128, frame_bytes=156, serial_delay_ms=1.248000, throughput_mbps=1.020735, goodput_mbps=0.837526, avg_delay_ms=3494.843589, packet_loss_rate_pct=72.062755, overhead_ratio_pct=17.948718
+regime=low_bw, bottleneck_mbps=1, offered_load_pct=300.000000, packet_size_bytes=256, frame_bytes=284, serial_delay_ms=2.272000, throughput_mbps=1.026631, goodput_mbps=0.925414, avg_delay_ms=1134.936489, packet_loss_rate_pct=69.130742, overhead_ratio_pct=9.859155
+regime=low_bw, bottleneck_mbps=1, offered_load_pct=300.000000, packet_size_bytes=512, frame_bytes=540, serial_delay_ms=4.320000, throughput_mbps=1.019967, goodput_mbps=0.967080, avg_delay_ms=806.213546, packet_loss_rate_pct=67.740872, overhead_ratio_pct=5.185185
+regime=low_bw, bottleneck_mbps=1, offered_load_pct=300.000000, packet_size_bytes=1024, frame_bytes=1052, serial_delay_ms=8.416000, throughput_mbps=1.031395, goodput_mbps=1.003944, avg_delay_ms=952.937084, packet_loss_rate_pct=66.509612, overhead_ratio_pct=2.661597
+regime=low_bw, bottleneck_mbps=1, offered_load_pct=300.000000, packet_size_bytes=1500, frame_bytes=1528, serial_delay_ms=12.224000, throughput_mbps=0.926495, goodput_mbps=0.909517, avg_delay_ms=970.482916, packet_loss_rate_pct=69.653459, overhead_ratio_pct=1.832461
+regime=high_bw, bottleneck_mbps=100, offered_load_pct=3.000000, packet_size_bytes=64, frame_bytes=92, serial_delay_ms=0.007360, throughput_mbps=0.576110, goodput_mbps=0.400772, avg_delay_ms=6757.106804, packet_loss_rate_pct=86.631567, overhead_ratio_pct=30.434783
+regime=high_bw, bottleneck_mbps=100, offered_load_pct=3.000000, packet_size_bytes=128, frame_bytes=156, serial_delay_ms=0.012480, throughput_mbps=1.113345, goodput_mbps=0.913514, avg_delay_ms=3322.676531, packet_loss_rate_pct=69.528039, overhead_ratio_pct=17.948718
+regime=high_bw, bottleneck_mbps=100, offered_load_pct=3.000000, packet_size_bytes=256, frame_bytes=284, serial_delay_ms=0.022720, throughput_mbps=1.993562, goodput_mbps=1.797014, avg_delay_ms=690.160334, packet_loss_rate_pct=40.056537, overhead_ratio_pct=9.859155
+regime=high_bw, bottleneck_mbps=100, offered_load_pct=3.000000, packet_size_bytes=512, frame_bytes=540, serial_delay_ms=0.043200, throughput_mbps=3.161793, goodput_mbps=2.997848, avg_delay_ms=7.053869, packet_loss_rate_pct=0.000000, overhead_ratio_pct=5.185185
+regime=high_bw, bottleneck_mbps=100, offered_load_pct=3.000000, packet_size_bytes=1024, frame_bytes=1052, serial_delay_ms=0.084160, throughput_mbps=3.079676, goodput_mbps=2.997707, avg_delay_ms=6.671899, packet_loss_rate_pct=0.000000, overhead_ratio_pct=2.661597
+regime=high_bw, bottleneck_mbps=100, offered_load_pct=3.000000, packet_size_bytes=1500, frame_bytes=1528, serial_delay_ms=0.122240, throughput_mbps=3.053049, goodput_mbps=2.997103, avg_delay_ms=7.571309, packet_loss_rate_pct=0.000000, overhead_ratio_pct=1.832461
+
