@@ -1,17 +1,9 @@
 #!/usr/bin/env python3
-"""Experiment 1: propagation-delay variation on a multi-hop topology.
+"""Experiment 1: UDP packet-size sweep at a 10 Mbps bottleneck.
 
-Topology used in each run:
-Sender1 --+
-Sender2 --+-- Router1 --[bottleneck p2p]-- Router2 --[802.11g WiFi]-- Receiver
-Sender3 --+
-
-This experiment isolates propagation delay by fixing:
-- packet size = 512 B
-- bottleneck bandwidth = 10 Mbps
-- one active sender
-- offered load = 50% of bottleneck (5 Mbps)
-and sweeping Router1<->Router2 delay.
+Topology: 3 UDP senders -> Router1 -> [10 Mbps p2p, 5 ms] -> Router2 -> 802.11g -> Receiver.
+Each sender offers 4 Mbps (12 Mbps total). Only the packet size changes.
+Sweep: 128, 256, 512, 1024, 1500 B.
 """
 
 import csv
@@ -21,12 +13,12 @@ IP_UDP_HEADER_BYTES = 28
 SIM_SECONDS = 30.0
 APP_START_SECONDS = 1.0
 ACTIVE_TIME = SIM_SECONDS - APP_START_SECONDS
-PACKET_SIZE_BYTES = 512
+NUM_SENDERS = 3
+PER_SENDER_MBPS = 4.0
+PACKET_SIZE_SWEEP_BYTES = [128, 256, 512, 1024, 1500]
 BOTTLENECK_MBPS = 10
-OFFERED_MBPS = 5.0
-DELAY_VALUES_MS = [1, 5, 10, 25, 50, 75, 100]
 OUTPUT_CSV = "project/results/results_experiment1.csv"
-SINK_PORT = 9101
+SINK_PORT = 9103
 
 
 def _node_container_from_node(node):
@@ -36,7 +28,6 @@ def _node_container_from_node(node):
 
 
 def _configure_wifi(ap_node, sta_node):
-    # Create 802.11g AP/STA WiFi for the Router2 -> Receiver hop.
     channel = ns.YansWifiChannelHelper.Default()
     phy = ns.YansWifiPhyHelper()
     phy.SetChannel(channel.Create())
@@ -115,11 +106,11 @@ def _collect_metrics(flow_helper, monitor, sink_port, packet_size, active_time):
     }
 
 
-def run_one(delay_ms, run_id):
+def run_one(packet_size_bytes, run_id):
     ns.RngSeedManager.SetRun(run_id)
 
     senders = ns.NodeContainer()
-    senders.Create(3)
+    senders.Create(NUM_SENDERS)
     routers = ns.NodeContainer()
     routers.Create(2)
     receiver = ns.NodeContainer()
@@ -137,7 +128,7 @@ def run_one(delay_ms, run_id):
 
     bottleneck = ns.PointToPointHelper()
     bottleneck.SetDeviceAttribute("DataRate", ns.StringValue(f"{BOTTLENECK_MBPS}Mbps"))
-    bottleneck.SetChannelAttribute("Delay", ns.TimeValue(ns.MilliSeconds(delay_ms)))
+    bottleneck.SetChannelAttribute("Delay", ns.TimeValue(ns.MilliSeconds(5)))
     bottleneck_devices = bottleneck.Install(routers.Get(0), routers.Get(1))
 
     wifi_devices = _configure_wifi(routers.Get(1), receiver.Get(0))
@@ -148,15 +139,15 @@ def run_one(delay_ms, run_id):
     internet.Install(receiver)
 
     csma_ip = ns.Ipv4AddressHelper()
-    csma_ip.SetBase(ns.Ipv4Address("10.10.1.0"), ns.Ipv4Mask("255.255.255.0"))
+    csma_ip.SetBase(ns.Ipv4Address("10.30.1.0"), ns.Ipv4Mask("255.255.255.0"))
     csma_ip.Assign(csma_devices)
 
     bottleneck_ip = ns.Ipv4AddressHelper()
-    bottleneck_ip.SetBase(ns.Ipv4Address("10.10.2.0"), ns.Ipv4Mask("255.255.255.0"))
+    bottleneck_ip.SetBase(ns.Ipv4Address("10.30.2.0"), ns.Ipv4Mask("255.255.255.0"))
     bottleneck_ip.Assign(bottleneck_devices)
 
     wifi_ip = ns.Ipv4AddressHelper()
-    wifi_ip.SetBase(ns.Ipv4Address("10.10.3.0"), ns.Ipv4Mask("255.255.255.0"))
+    wifi_ip.SetBase(ns.Ipv4Address("10.30.3.0"), ns.Ipv4Mask("255.255.255.0"))
     wifi_interfaces = wifi_ip.Assign(wifi_devices)
 
     receiver_ip = wifi_interfaces.GetAddress(1)
@@ -171,16 +162,17 @@ def run_one(delay_ms, run_id):
     sink_apps.Start(ns.Seconds(0.0))
     sink_apps.Stop(ns.Seconds(SIM_SECONDS + 0.5))
 
-    remote = ns.InetSocketAddress(receiver_ip, SINK_PORT)
-    onoff = ns.OnOffHelper("ns3::UdpSocketFactory", remote.ConvertTo())
-    onoff.SetAttribute("OnTime", ns.StringValue("ns3::ConstantRandomVariable[Constant=1]"))
-    onoff.SetAttribute("OffTime", ns.StringValue("ns3::ConstantRandomVariable[Constant=0]"))
-    onoff.SetAttribute("PacketSize", ns.UintegerValue(PACKET_SIZE_BYTES))
-    onoff.SetAttribute("DataRate", ns.DataRateValue(ns.DataRate(int(OFFERED_MBPS * 1e6))))
+    for sender_idx in range(NUM_SENDERS):
+        remote = ns.InetSocketAddress(receiver_ip, SINK_PORT)
+        onoff = ns.OnOffHelper("ns3::UdpSocketFactory", remote.ConvertTo())
+        onoff.SetAttribute("OnTime", ns.StringValue("ns3::ConstantRandomVariable[Constant=1]"))
+        onoff.SetAttribute("OffTime", ns.StringValue("ns3::ConstantRandomVariable[Constant=0]"))
+        onoff.SetAttribute("PacketSize", ns.UintegerValue(packet_size_bytes))
+        onoff.SetAttribute("DataRate", ns.DataRateValue(ns.DataRate(int(PER_SENDER_MBPS * 1e6))))
 
-    sender_apps = onoff.Install(_node_container_from_node(senders.Get(0)))
-    sender_apps.Start(ns.Seconds(APP_START_SECONDS))
-    sender_apps.Stop(ns.Seconds(SIM_SECONDS))
+        sender_apps = onoff.Install(_node_container_from_node(senders.Get(sender_idx)))
+        sender_apps.Start(ns.Seconds(APP_START_SECONDS + 0.02 * sender_idx))
+        sender_apps.Stop(ns.Seconds(SIM_SECONDS))
 
     flow_helper = ns.FlowMonitorHelper()
     monitor = flow_helper.InstallAll()
@@ -189,7 +181,7 @@ def run_one(delay_ms, run_id):
     ns.Simulator.Run()
     monitor.CheckForLostPackets()
 
-    metrics = _collect_metrics(flow_helper, monitor, SINK_PORT, PACKET_SIZE_BYTES, ACTIVE_TIME)
+    metrics = _collect_metrics(flow_helper, monitor, SINK_PORT, packet_size_bytes, ACTIVE_TIME)
     ns.Simulator.Destroy()
     return metrics
 
@@ -198,26 +190,30 @@ def main():
     ns.RngSeedManager.SetSeed(206)
 
     rows = []
-    for run_id, delay_ms in enumerate(DELAY_VALUES_MS, start=1):
-        metrics = run_one(delay_ms, run_id)
-        row = {
-            "delay_ms": delay_ms,
-            "packet_size_bytes": PACKET_SIZE_BYTES,
-            "bottleneck_mbps": BOTTLENECK_MBPS,
-            "active_senders": 1,
-            "offered_load_pct": 50,
-            **metrics,
-        }
-        rows.append(row)
+    run_id = 1
+
+    for packet_size_bytes in PACKET_SIZE_SWEEP_BYTES:
+        metrics = run_one(packet_size_bytes, run_id)
+        rows.append(
+            {
+                "link_type": "wireless",
+                "bottleneck_mbps": BOTTLENECK_MBPS,
+                "packet_size_bytes": packet_size_bytes,
+                "active_senders": NUM_SENDERS,
+                "offered_load_mbps": NUM_SENDERS * PER_SENDER_MBPS,
+                **metrics,
+            }
+        )
+        run_id += 1
 
     with open(OUTPUT_CSV, "w", newline="", encoding="utf-8") as csv_file:
         writer = csv.writer(csv_file)
         writer.writerow([
-            "delay_ms",
-            "packet_size_bytes",
+            "link_type",
             "bottleneck_mbps",
+            "packet_size_bytes",
             "active_senders",
-            "offered_load_pct",
+            "offered_load_mbps",
             "throughput_mbps",
             "goodput_mbps",
             "avg_delay_ms",
@@ -226,11 +222,11 @@ def main():
         ])
         for row in rows:
             writer.writerow([
-                row["delay_ms"],
-                row["packet_size_bytes"],
+                row["link_type"],
                 row["bottleneck_mbps"],
+                row["packet_size_bytes"],
                 row["active_senders"],
-                row["offered_load_pct"],
+                f"{row['offered_load_mbps']:.3f}",
                 f"{row['throughput_mbps']:.6f}",
                 f"{row['goodput_mbps']:.6f}",
                 f"{row['avg_delay_ms']:.6f}",
@@ -238,15 +234,16 @@ def main():
                 f"{row['overhead_ratio_pct']:.6f}",
             ])
 
-    print("\nExperiment 1 Summary (Delay Variation)")
-    print("delay_ms | throughput_mbps | goodput_mbps | avg_delay_ms | loss_pct")
+    print("\nExperiment 1 Summary: Packet Size Sweep (10 Mbps Bottleneck)")
+    print("packet_size | throughput_mbps | goodput_mbps | delay_ms | loss_pct | overhead_pct")
     for row in rows:
         print(
-            f"{row['delay_ms']:>8} | "
+            f"{row['packet_size_bytes']:>11} | "
             f"{row['throughput_mbps']:>15.3f} | "
             f"{row['goodput_mbps']:>12.3f} | "
-            f"{row['avg_delay_ms']:>12.3f} | "
-            f"{row['packet_loss_rate_pct']:>8.3f}"
+            f"{row['avg_delay_ms']:>8.3f} | "
+            f"{row['packet_loss_rate_pct']:>8.3f} | "
+            f"{row['overhead_ratio_pct']:>12.3f}"
         )
 
     print(f"\nCSV written: {OUTPUT_CSV}")

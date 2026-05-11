@@ -37,7 +37,6 @@ def _node_container_from_node(node):
 
 
 def _configure_wifi(ap_node, sta_node):
-    # Build an infrastructure-mode 802.11g last hop (Router2 as AP).
     channel = ns.YansWifiChannelHelper.Default()
     phy = ns.YansWifiPhyHelper()
     phy.SetChannel(channel.Create())

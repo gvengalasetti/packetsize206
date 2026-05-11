@@ -1,20 +1,9 @@
 #!/usr/bin/env python3
-"""Experiment 7: TCP competing flow with packet-size sweep.
+"""Experiment 4: TCP BulkSend competing with UDP, swept by packet size.
 
-Topology:
-Sender1 --+
-Sender2 --+-- Router1 --[bottleneck p2p]-- Router2 --[802.11g WiFi]-- Receiver
-Sender3 --+
-Sender4 --+
-
-Traffic model:
-- Sender1..Sender3: UDP OnOff flows competing at the bottleneck.
-- Sender4: TCP BulkSend flow sharing the same path.
-- Packet sizes swept: [128, 256, 512, 1024, 1500] bytes.
-
-Queueing/fairness note:
-- Packet-based DropTail queues can bias service toward larger packets in terms of
-  bytes dequeued per packet event; this can affect fairness for heterogeneous packet sizes.
+3 UDP OnOff senders share the bottleneck with 1 TCP BulkSend sender.
+Packet sizes swept: 128, 256, 512, 1024, 1500 B. Reports per-protocol
+goodput, loss, overhead, and drops.
 """
 
 import csv
@@ -30,7 +19,7 @@ UDP_SENDERS = 3
 UDP_PER_SENDER_MBPS = 4.0
 BOTTLENECK_MBPS = 10
 ROUTER_QUEUE_MAX_SIZE = "100p"
-OUTPUT_CSV = "project/results/results_experiment7.csv"
+OUTPUT_CSV = "project/results/results_experiment4.csv"
 UDP_SINK_PORT = 9207
 TCP_SINK_PORT = 9208
 
@@ -136,15 +125,12 @@ def run_one(packet_size_bytes, run_id):
     csma.SetChannelAttribute("DataRate", ns.StringValue("100Mbps"))
     csma.SetChannelAttribute("Delay", ns.TimeValue(ns.MilliSeconds(1)))
     csma.SetQueue("ns3::DropTailQueue<Packet>", "MaxSize", ns.StringValue(ROUTER_QUEUE_MAX_SIZE))
-    # Router1 access-side DropTail buffer depth controls when congestion drops begin.
     csma_devices = csma.Install(csma_nodes)
 
     bottleneck = ns.PointToPointHelper()
     bottleneck.SetDeviceAttribute("DataRate", ns.StringValue(f"{BOTTLENECK_MBPS}Mbps"))
     bottleneck.SetChannelAttribute("Delay", ns.TimeValue(ns.MilliSeconds(5)))
     bottleneck.SetQueue("ns3::DropTailQueue<Packet>", "MaxSize", ns.StringValue(ROUTER_QUEUE_MAX_SIZE))
-    # Router1/Router2 bottleneck DropTail buffer: smaller buffers drop earlier with lower delay,
-    # larger buffers defer drops but permit larger queueing delay before loss onset.
     bottleneck_devices = bottleneck.Install(routers.Get(0), routers.Get(1))
 
     wifi_devices = _configure_wifi(routers.Get(1), receiver.Get(0))
@@ -227,7 +213,7 @@ def main():
         udp_metrics, tcp_metrics = run_one(packet_size, run_id)
         rows.append(
             {
-                "experiment": "experiment7_tcp_competing_flow",
+                "experiment": "experiment4_tcp_competing_flow",
                 "packet_size_bytes": packet_size,
                 "udp_goodput_mbps": udp_metrics["goodput_mbps"],
                 "udp_overhead_ratio_pct": udp_metrics["overhead_ratio_pct"],
@@ -277,7 +263,7 @@ def main():
                 ]
             )
 
-    print("\nExperiment 7 Summary (TCP competing with UDP)")
+    print("\nExperiment 4 Summary (TCP competing with UDP)")
     print("pkt | udp_goodput | udp_loss | tcp_goodput | tcp_loss")
     for row in rows:
         print(

@@ -1,34 +1,10 @@
 #!/usr/bin/env python3
-"""Experiment 8: packet-size effect across low vs high bandwidth bottlenecks.
+"""Experiment 5: packet-size sweep across two bandwidth regimes.
 
-Topology used in each run:
-Sender1 --+
-Sender2 --+-- Router1 --[bottleneck p2p]-- Router2 --[802.11g WiFi]-- Receiver
-Sender3 --+
-
-This experiment compares two bottleneck bandwidth regimes while sweeping UDP packet size.
-The core motivation follows Wang and Keshav (IEEE INFOCOM 1999),
-"Efficient and Accurate Ethernet Simulation", which reports that on a 10 Mbps link,
-64-byte packets can achieve only about 26% throughput efficiency under load, while
-1500-byte packets can reach about 82%, largely because per-packet header/processing
-costs dominate small frames. Extending that insight here:
-
-- low_bw (1 Mbps bottleneck, 300% offered load):
-  serialization and queue buildup dominate, so packet-size choice strongly shifts
-  delay/loss behavior through frame transmission time and queue occupancy.
-- high_bw (100 Mbps bottleneck, 3% offered load):
-  the bottleneck is lightly loaded, so queueing pressure is low and header overhead
-  becomes the more visible packet-size-dependent component.
-
-Fixed settings:
-- 3 UDP senders, each 1 Mbps (3 Mbps total offered)
-- bottleneck delay: 5 ms
-- simulation: 30 s, applications start at 1 s
-- sender starts staggered by 0.02 s
-- sink port: 9208
-- IP/UDP header bytes: 28
-- queue max size: 100 packets (DropTailQueue<Packet>)
-- RNG seed: 206
+Same multi-hop topology as the other experiments. The bottleneck is set
+to either 1 Mbps (overloaded) or 100 Mbps (lightly loaded), and the UDP
+packet size is swept at each setting to see how link capacity changes
+the packet-size effect.
 """
 
 import csv
@@ -45,7 +21,7 @@ PER_SENDER_MBPS = 1.0
 TOTAL_OFFERED_MBPS = SENDER_COUNT * PER_SENDER_MBPS
 SINK_PORT = 9208
 ROUTER_QUEUE_MAX_SIZE = "100p"
-OUTPUT_CSV = "project/results/results_experiment8.csv"
+OUTPUT_CSV = "project/results/results_experiment5.csv"
 
 REGIMES = [
     ("low_bw", 1),
@@ -285,7 +261,7 @@ def main():
                 ]
             )
 
-    print("\nExperiment 8 Summary (Packet Size vs Bottleneck Regime)")
+    print("\nExperiment 5 Summary (Packet Size vs Bottleneck Regime)")
     print("regime  | bottleneck | pkt | serial_ms | thr_mbps | gput_mbps | delay_ms | loss_pct")
     for row in rows:
         print(
